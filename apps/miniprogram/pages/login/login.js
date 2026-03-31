@@ -25,6 +25,10 @@ Page({
   toggleApi() {
     this.setData({ showApi: !this.data.showApi });
   },
+  
+  toRegister() {
+    wx.navigateTo({ url: '/pages/register/register' });
+  },
 
   onApiBaseUrl(e) {
     const v = (e.detail.value || '').trim();
@@ -55,8 +59,8 @@ Page({
       const platform = (wx.getSystemInfoSync && wx.getSystemInfoSync().platform) || '';
       const hint =
         platform && platform !== 'devtools'
-          ? '（真机请填电脑局域网IP，如 http://10.10.232.146:3001/api）'
-          : '（可尝试 http://127.0.0.1:3001/api）';
+          ? '（请确保已配置合法域名，或填入：https://your-notes-worker.hmi247378.workers.dev/api）'
+          : '（本地调试可填：https://your-notes-worker.hmi247378.workers.dev/api）';
       this.setData({ error: (e && e.message ? e.message : '连接失败') + hint });
     } finally {
       this.setData({ testing: false });

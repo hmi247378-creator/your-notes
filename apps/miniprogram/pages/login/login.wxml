@@ -19,6 +19,11 @@
     </view>
 
     <button class="btn btn-primary mt-32" style="height: 88rpx; line-height: 88rpx; font-size: 32rpx;" bindtap="onLogin" loading="{{loading}}" disabled="{{loading || !email || !password}}">立即登录</button>
+    
+    <view class="text-center mt-32">
+      <text class="small" style="color: var(--text-muted);">没有账号？</text>
+      <text class="small" style="color: var(--primary); font-weight: 600; margin-left: 8rpx;" bindtap="toRegister">去注册</text>
+    </view>
   </view>
 
   <!-- API Configuration (Expandable or Subtle) -->

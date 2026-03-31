@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "your-notes-worker",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-03-31",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "vars": {
+    "JWT_SECRET": "replace-with-a-very-strong-secret"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "your-notes-db",
+      "database_id": "a57d9efe-1d70-44b0-9336-7bec07b3e798"
+    }
+  ],
+  "ai": {
+    "binding": "AI"
+  }
+}

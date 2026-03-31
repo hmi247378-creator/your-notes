@@ -5,7 +5,7 @@ function getAppToken() {
 
 function apiBase() {
   const app = getApp();
-  return (app && app.globalData && app.globalData.apiBaseUrl) || 'http://10.10.232.146:3001/api';
+  return (app && app.globalData && app.globalData.apiBaseUrl) || 'https://your-notes-worker.hmi247378.workers.dev/api';
 }
 
 function request(path, options) {
