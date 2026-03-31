@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  // 本仓库默认用 SQLite 便于本地直接跑起来（无需 Docker）。
+  // 若你本机有 Postgres（或装了 Docker），把 provider 改回 "postgresql" 并更新 DATABASE_URL 即可。
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  createdAt    DateTime @default(now())
+  nickname     String?
+  email        String?  @unique
+  passwordHash String?
+  wechatOpenId String?  @unique
+
+  tags           Tag[]
+  notes          Note[]
+  reminders      Reminder[]
+  ingestBatches  IngestBatch[]
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  userId    String
+  name      String
+  color     String?
+  parentId  String?
+  path      String
+  depth     Int
+  keywords  Json?    // Phase1 可选：用户自定义关键词或系统画像
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User    @relation(fields: [userId], references: [id])
+  parent   Tag?    @relation("TagToParent", fields: [parentId], references: [id])
+  children Tag[]   @relation("TagToParent")
+  noteTags NoteTag[]
+
+  @@index([userId, path])
+  @@index([userId, parentId])
+}
+
+/** 智能录入批次：一次录入的原始文本，用于「所有笔记」视图展示原始记录 */
+model IngestBatch {
+  id         String    @id @default(uuid())
+  userId     String
+  rawText    String    // 用户录入的原始全文
+  recordedAt DateTime? // 记录日期
+  createdAt  DateTime  @default(now())
+
+  user   User    @relation(fields: [userId], references: [id])
+  notes  Note[]
+
+  @@index([userId, createdAt])
+}
+
+model Note {
+  id            String   @id @default(uuid())
+  userId        String
+  contentMd     String
+  contentPlain  String
+  source        String
+  archived      Boolean  @default(false)
+  recordedAt    DateTime? // 用户选择的记录日期，用于补记/回溯
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+  batchId       String?  // 若来自智能录入分条，关联到 IngestBatch
+
+  user        User         @relation(fields: [userId], references: [id])
+  batch       IngestBatch? @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  noteTags    NoteTag[]
+  reminders   Reminder[]
+
+  @@index([userId, createdAt])
+  @@index([batchId])
+}
+
+/** 提醒事项：从笔记添加的待办/提醒 */
+model Reminder {
+  id        String   @id @default(uuid())
+  userId    String
+  noteId    String
+  status    String   @default("待处理") // 待处理 | 进行中 | 已完成
+  remindAt  DateTime? // 可选提醒时间
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  note Note @relation(fields: [noteId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, noteId])
+  @@index([userId])
+}
+
+model NoteTag {
+  noteId String
+  tagId  String
+
+  note Note @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([noteId, tagId])
+}
+
+model ClassificationSuggestion {
+  id            String   @id @default(uuid())
+  userId        String
+  noteId        String?
+  inputText     String
+  suggestedTags Json
+  chosenTags    Json?
+  createdAt     DateTime @default(now())
+}
+
+model ClassificationFeedback {
+  id         String   @id @default(uuid())
+  userId     String
+  noteId     String
+  beforeTags Json?
+  afterTags  Json
+  reason     String?
+  createdAt  DateTime @default(now())
+}
+
+model ChangeLog {
+  // SQLite 下使用 Int 自增更稳定（BigInt 自增在不同引擎行为不一致）
+  id         Int      @id @default(autoincrement())
+  userId     String
+  entityType String
+  entityId   String
+  op         String
+  payload    Json?
+  createdAt  DateTime @default(now())
+
+  @@index([userId, id])
+}
+
+model ProcessedMutation {
+  id               String   @id @default(uuid())
+  userId           String
+  clientMutationId String
+  createdAt        DateTime @default(now())
+
+  @@unique([userId, clientMutationId])
+}
+
