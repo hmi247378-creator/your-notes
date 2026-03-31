@@ -1,0 +1,50 @@
+<view class="container login-container">
+  <!-- Brand Header -->
+  <view class="brand-hero">
+    <view class="brand-logo shadow-md">✨</view>
+    <view class="h1" style="margin-top: 32rpx; font-weight: 800; font-size: 56rpx;">你的笔记</view>
+    <view class="body" style="color: var(--text-muted); margin-top: 8rpx;">智享记录，灵感永驻</view>
+  </view>
+
+  <view class="card shadow-md" style="margin-top: -20rpx;">
+    <view class="h2 mb-32">登录</view>
+    
+    <view class="input-group">
+      <text class="label" style="font-size: 28rpx;">邮箱</text>
+      <input class="input" style="height: 88rpx; font-size: 32rpx;" placeholder="请输入邮箱" value="{{email}}" bindinput="onEmail" />
+    </view>
+    <view class="input-group mt-16">
+      <text class="label" style="font-size: 28rpx;">密码</text>
+      <input class="input" style="height: 88rpx; font-size: 32rpx;" password placeholder="请输入密码" value="{{password}}" bindinput="onPassword" />
+    </view>
+
+    <button class="btn btn-primary mt-32" style="height: 88rpx; line-height: 88rpx; font-size: 32rpx;" bindtap="onLogin" loading="{{loading}}" disabled="{{loading || !email || !password}}">立即登录</button>
+  </view>
+
+  <!-- API Configuration (Expandable or Subtle) -->
+  <view class="api-config mt-32">
+    <view class="flex-between mb-16" bindtap="toggleApi">
+      <text class="small">API 配置</text>
+      <text class="small">{{showApi ? '收起 ↑' : '展开 ↓'}}</text>
+    </view>
+    
+    <view wx:if="{{showApi}}" class="card api-card">
+      <view class="input-group">
+        <text class="label">API 地址</text>
+        <input 
+          class="input" 
+          placeholder="http://..." 
+          value="{{apiBaseUrl}}" 
+          bindinput="onApiBaseUrl" 
+        />
+      </view>
+      <view class="flex-row gap-16">
+        <button class="btn btn-secondary" style="flex: 1;" bindtap="onSaveApiBase">保存</button>
+        <button class="btn btn-secondary" style="flex: 1;" bindtap="onTestApi" loading="{{testing}}" disabled="{{testing}}">测试</button>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{error}}" class="error-msg small mt-32">{{error}}</view>
+</view>
+

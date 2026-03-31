@@ -1,0 +1,92 @@
+<view class="container pb-120">
+  <view class="flex-between mb-32">
+    <view>
+      <view class="h1">数据看板</view>
+      <view class="small">了解你的记录习惯</view>
+    </view>
+    <view class="refresh-btn {{loading ? 'rotating' : ''}}" bindtap="refresh">
+      <text>🔄</text>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="card empty-state">
+    <view class="body text-muted">看板加载中…</view>
+  </view>
+
+  <view wx:else>
+    <!-- Top Highlights -->
+    <view class="flex-row gap-16 mb-32">
+      <view class="card highlight-card" style="flex: 1;">
+        <view class="small">总记录数</view>
+        <view class="h1" style="margin-top: 8rpx; margin-bottom: 0; font-size: 64rpx;">{{totalNotes}}</view>
+      </view>
+      <view class="card highlight-card" style="flex: 1;">
+        <view class="small">活跃天数</view>
+        <view class="h1" style="margin-top: 8rpx; margin-bottom: 0; font-size: 64rpx;">{{recentDays.length}}</view>
+      </view>
+    </view>
+
+    <!-- Recent Activity Chart -->
+    <view class="card mb-32">
+      <view class="h2 mb-32">最近 7 天活跃</view>
+      <view wx:if="{{recentDays.length === 0}}" class="empty-state">
+        <view class="body text-muted">暂无数据</view>
+      </view>
+      <view wx:else>
+        <block wx:for="{{recentDays}}" wx:key="day">
+          <view class="stat-item mb-32">
+            <view class="flex-between mb-8">
+              <view class="body">{{item.day}}</view>
+              <view class="small">{{item.count}} 条</view>
+            </view>
+            <view class="progress-bg">
+              <view class="progress-fill primary" style="width: {{item.percent}}%;"></view>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <!-- Hot Tags -->
+    <view class="card">
+      <view class="h2 mb-32">热门分类</view>
+      <view wx:if="{{tagCounts.length === 0}}" class="empty-state">
+        <view class="body text-muted">暂无分类统计</view>
+      </view>
+      <view wx:else>
+        <block wx:for="{{tagCounts}}" wx:key="id">
+          <view class="stat-item mb-32">
+            <view class="flex-between mb-8">
+              <view class="body">{{item.name}}</view>
+              <view class="small">{{item.value}} 条</view>
+            </view>
+            <view class="progress-bg">
+              <view class="progress-fill secondary" style="width: {{item.percent}}%;"></view>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+
+  <!-- Bottom Nav -->
+  <view class="tab-bar">
+    <view class="tab-item" bindtap="goHome">
+      <text class="tab-icon">✨</text>
+      <text class="tab-label">创作</text>
+    </view>
+    <view class="tab-item" bindtap="goNotes">
+      <text class="tab-icon">📖</text>
+      <text class="tab-label">笔记</text>
+    </view>
+    <view class="tab-item tab-item-active">
+      <text class="tab-icon">📈</text>
+      <text class="tab-label">统计</text>
+    </view>
+    <view class="tab-item" bindtap="goReminders">
+      <text class="tab-icon">🔔</text>
+      <text class="tab-label">提醒</text>
+    </view>
+  </view>
+</view>
+

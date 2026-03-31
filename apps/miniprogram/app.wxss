@@ -1,0 +1,200 @@
+/* Global Styles & Design Tokens - Premium Minimalist */
+page {
+  --primary: #2563EB;
+  --primary-light: #EFF6FF;
+  --secondary: #3B82F6;
+  --bg-color: #F8FAFC;
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --text-main: #1E293B;
+  --text-muted: #64748B;
+  --border-color: rgba(37, 99, 235, 0.1);
+  --shadow-sm: 0 4rpx 12rpx rgba(37, 99, 235, 0.05);
+  --shadow-md: 0 12rpx 32rpx rgba(37, 99, 235, 0.12);
+  --radius-lg: 40rpx;
+  --radius-md: 32rpx;
+
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "HarmonyOS Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 28rpx;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Base Layout */
+.container {
+  min-height: 100vh;
+  padding: 32rpx;
+  box-sizing: border-box;
+  padding-bottom: calc(180rpx + env(safe-area-inset-bottom));
+}
+
+/* Glassmorphism Card */
+.card {
+  background: var(--card-bg);
+  backdrop-filter: blur(20rpx);
+  -webkit-backdrop-filter: blur(20rpx);
+  border: 1rpx solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-lg);
+  padding: 40rpx;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 32rpx;
+}
+
+/* Premium Buttons */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96rpx;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 32rpx;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  margin: 0;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), #3B82F6);
+  color: #FFFFFF;
+  box-shadow: 0 8rpx 20rpx rgba(37, 99, 235, 0.25);
+}
+
+.btn-primary:active {
+  transform: scale(0.97);
+  box-shadow: 0 4rpx 10rpx rgba(37, 99, 235, 0.2);
+}
+
+.badge-purple { background: var(--primary-light); color: var(--primary); }
+.btn-secondary {
+  background: #FFFFFF;
+  color: var(--primary);
+  border: 2rpx solid var(--primary-light);
+}
+
+/* Input Fields */
+.input-group {
+  margin-bottom: 32rpx;
+}
+
+.label {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 16rpx;
+  display: block;
+}
+
+.input {
+  background: #F1F5F9;
+  border-radius: 24rpx;
+  padding: 24rpx 32rpx;
+  font-size: 28rpx;
+  border: 1rpx solid transparent;
+  transition: all 0.2s ease;
+}
+
+.input:focus {
+  background: #FFFFFF;
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 4rpx rgba(37, 99, 235, 0.1);
+}
+
+/* Typography */
+.h1 { font-size: 56rpx; font-weight: 800; color: var(--text-main); line-height: 1.2; margin-bottom: 8rpx; }
+.h2 { font-size: 34rpx; font-weight: 700; color: var(--text-main); margin-bottom: 16rpx; }
+.body { font-size: 34rpx; color: var(--text-main); line-height: 1.6; }
+.small { font-size: 28rpx; color: var(--text-muted); }
+
+/* Custom Tab Bar - Modern Floating */
+.tab-bar {
+  position: fixed;
+  bottom: 40rpx;
+  left: 40rpx;
+  right: 40rpx;
+  height: 120rpx;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20rpx);
+  border-radius: 60rpx;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 20rpx 40rpx rgba(0, 0, 0, 0.1);
+  padding: 0 20rpx;
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 1000;
+}
+
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+}
+
+.tab-item-active {
+  color: var(--primary);
+}
+
+.tab-icon {
+  font-size: 40rpx;
+  margin-bottom: 4rpx;
+}
+
+.tab-label {
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+
+.fab {
+  position: fixed;
+  right: 48rpx;
+  bottom: 240rpx;
+  width: 120rpx;
+  height: 120rpx;
+  background: var(--primary);
+  border-radius: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 64rpx;
+  z-index: 1000;
+  box-shadow: 0 12rpx 32rpx rgba(139, 92, 246, 0.45);
+  transition: transform 0.2s ease;
+}
+
+.fab:active {
+  transform: scale(0.9);
+}
+.flex-row { display: flex; align-items: center; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.mt-32 { margin-top: 32rpx; }
+.mb-32 { margin-bottom: 32rpx; }
+.mt-16 { margin-top: 16rpx; }
+.mb-16 { margin-bottom: 16rpx; }
+.gap-16 { gap: 16rpx; }
+.gap-12 { gap: 12rpx; }
+.gap-8 { gap: 8rpx; }
+.pb-120 { padding-bottom: 120rpx; }
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+
+.avatar {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: var(--primary-light);
+  border: 4rpx solid #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+

@@ -1,0 +1,25 @@
+{
+  "name": "your-notes",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "services/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c cyan,magenta \"npm run dev -w services/api\" \"npm run dev -w apps/web\"",
+    "dev:api": "npm run dev -w services/api",
+    "dev:web": "npm run dev -w apps/web",
+    "lint": "npm run lint -ws --if-present",
+    "format": "prettier -w .",
+    "db:up": "docker compose -f infra/docker-compose.yml up -d",
+    "db:down": "docker compose -f infra/docker-compose.yml down",
+    "prisma:generate": "npm run prisma:generate -w services/api",
+    "prisma:migrate": "npm run prisma:migrate -w services/api"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "prettier": "^3.6.2"
+  }
+}
+

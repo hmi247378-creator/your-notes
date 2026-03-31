@@ -1,0 +1,86 @@
+<view class="container pb-120">
+  <!-- Header -->
+  <view class="flex-between mb-32">
+    <view>
+      <view class="h1">标签管理</view>
+      <view class="small">组织你的灵感分类</view>
+    </view>
+    <view class="refresh-btn {{loading ? 'rotating' : ''}}" bindtap="refresh">
+      <text>🔄</text>
+    </view>
+  </view>
+
+  <view class="card mb-32">
+    <view class="flex-row gap-16">
+      <button class="btn btn-primary" style="flex: 1;" bindtap="startCreateRoot">新建根分类</button>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="card empty-state">
+    <view class="body text-muted">加载中…</view>
+  </view>
+
+  <view wx:else class="tags-list">
+    <block wx:for="{{tags}}" wx:key="id">
+      <view class="card mb-16 shadow-sm" style="margin-left: {{item.depth * 32}}rpx; padding: 24rpx 32rpx;">
+        <view class="flex-between">
+          <view class="flex-row gap-16">
+            <text class="small" wx:if="{{item.depth > 0}}">└</text>
+            <view class="body" style="font-weight: 600;">{{item.name}}</view>
+          </view>
+          <view class="flex-row gap-16">
+            <view class="small" style="color: var(--primary);" data-id="{{item.id}}" bindtap="startCreateChild">子分类</view>
+            <view class="small" style="color: var(--primary);" data-id="{{item.id}}" bindtap="startRename">重命名</view>
+            <view class="small" style="color: #EF4444;" data-id="{{item.id}}" bindtap="onDeleteTag">删除</view>
+          </view>
+        </view>
+      </view>
+    </block>
+    
+    <view wx:if="{{tags.length === 0}}" class="empty-state">
+      <text class="empty-icon">🏷</text>
+      <view class="body text-muted">暂无标签分类</view>
+    </view>
+  </view>
+
+  <!-- Edit Popup -->
+  <view wx:if="{{editingMode}}" class="modal-overlay" catchtap="cancelEdit">
+    <view class="modal-content card" catchtap="true">
+      <view class="h2 mb-32">
+        {{editingMode === 'rename' ? '重命名分类' : '新建分类名称'}}
+      </view>
+      <input
+        class="input"
+        placeholder="输入名称"
+        value="{{editingName}}"
+        bindinput="onEditNameInput"
+        focus="{{editingMode}}"
+      />
+      <view class="flex-row gap-16 mt-32">
+        <button class="btn btn-secondary" style="flex: 1;" bindtap="cancelEdit">取消</button>
+        <button class="btn btn-primary" style="flex: 1;" bindtap="saveEdit">保存</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- Bottom Nav -->
+  <view class="tab-bar">
+    <view class="tab-item" bindtap="goHome">
+      <text class="tab-icon">✨</text>
+      <text class="tab-label">创作</text>
+    </view>
+    <view class="tab-item tab-item-active">
+      <text class="tab-icon">📖</text>
+      <text class="tab-label">笔记</text>
+    </view>
+    <view class="tab-item" bindtap="goStats">
+      <text class="tab-icon">📈</text>
+      <text class="tab-label">统计</text>
+    </view>
+    <view class="tab-item" bindtap="goReminders">
+      <text class="tab-icon">🔔</text>
+      <text class="tab-label">提醒</text>
+    </view>
+  </view>
+</view>
+

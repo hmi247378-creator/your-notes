@@ -1,0 +1,40 @@
+<view class="container">
+  <!-- Header with Save Action -->
+  <view class="flex-between mb-32">
+    <view class="flex-row gap-16" bindtap="goBack">
+      <view class="h1" style="margin-bottom: 0;">编辑笔记</view>
+    </view>
+    <button class="btn btn-save {{saving ? 'disabled' : ''}}" bindtap="onSave" loading="{{saving}}" disabled="{{saving}}">
+      {{saving ? '' : '保存'}}
+    </button>
+  </view>
+
+  <!-- Loading State -->
+  <view wx:if="{{loading}}" class="card empty-state">
+    <view class="body text-muted">详情加载中…</view>
+  </view>
+
+  <!-- Editor Content -->
+  <view wx:else class="card editor-card">
+    <view class="input-group">
+      <text class="label">记录日期</text>
+      <picker mode="date" value="{{dateVal}}" bindchange="onDateChange">
+        <view class="input">{{dateVal || '选择日期'}}</view>
+      </picker>
+    </view>
+
+    <view class="input-group">
+      <text class="label">内容详情</text>
+      <textarea 
+        class="input" 
+        style="min-height: 500rpx; width: 100%; box-sizing: border-box; padding: 32rpx; line-height: 1.8;" 
+        value="{{text}}" 
+        maxlength="-1"
+        bindinput="onText" 
+        placeholder="在此开始你的记录..."
+        show-confirm-bar="{{false}}"
+      ></textarea>
+    </view>
+  </view>
+</view>
+

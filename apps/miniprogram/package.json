@@ -1,0 +1,9 @@
+{
+  "name": "@your-notes/miniprogram",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "lint": "echo \"miniprogram: lint (placeholder)\""
+  }
+}
+

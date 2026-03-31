@@ -1,0 +1,156 @@
+/* Search Section */
+.search-section {
+  padding: 32rpx;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: #F1F5F9;
+  border-radius: 24rpx;
+  padding: 16rpx 24rpx;
+  gap: 16rpx;
+}
+
+.search-bar input {
+  flex: 1;
+}
+
+.filter-btn {
+  width: 88rpx;
+  height: 88rpx;
+  background: #F1F5F9;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  transition: all 0.2s ease;
+}
+
+.filter-btn.active {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+/* Tag Pills */
+.tags-scroll {
+  display: flex;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.tag-pill {
+  padding: 12rpx 32rpx;
+  background: #F1F5F9;
+  color: var(--text-muted);
+  border-radius: 40rpx;
+  margin-right: 16rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.tag-pill.active {
+  background: var(--primary);
+  color: #FFFFFF;
+  box-shadow: 0 4rpx 12rpx rgba(124, 58, 237, 0.2);
+}
+
+.tag-count {
+  margin-left: 8rpx;
+  font-size: 20rpx;
+  opacity: 0.8;
+}
+
+/* Note Cards */
+.note-card {
+  padding: 40rpx;
+  transition: all 0.3s ease;
+}
+
+.note-card:active {
+  transform: translateY(4rpx);
+}
+
+.note-date {
+  color: #94A3B8;
+  font-size: 22rpx;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.badge {
+  padding: 4rpx 16rpx;
+  background: #F1F5F9;
+  color: var(--text-muted);
+  border-radius: 12rpx;
+  font-size: 20rpx;
+  font-weight: 700;
+}
+
+.badge-purple {
+  background: #F5F3FF;
+  color: #7C3AED;
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 0;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: 32rpx;
+  opacity: 0.2;
+}
+
+/* FAB */
+.fab {
+  position: fixed;
+  right: 48rpx;
+  bottom: 200rpx;
+  width: 112rpx;
+  height: 112rpx;
+  background: var(--primary);
+  color: #FFFFFF;
+  border-radius: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64rpx;
+  font-weight: 300;
+  z-index: 100;
+  box-shadow: 0 12rpx 32rpx rgba(124, 58, 237, 0.3);
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8rpx);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 40rpx;
+}
+
+.modal-content {
+  width: 100%;
+  max-width: 600rpx;
+}
+
+

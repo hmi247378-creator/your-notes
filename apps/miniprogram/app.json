@@ -1,0 +1,19 @@
+{
+  "pages": [
+    "pages/login/login",
+    "pages/notes/notes",
+    "pages/index/index",
+    "pages/confirm/confirm",
+    "pages/list/list",
+    "pages/edit/edit",
+    "pages/reminders/reminders",
+    "pages/tags/tags",
+    "pages/stats/stats"
+  ],
+  "window": {
+    "navigationBarTitleText": "你的笔记",
+    "navigationBarBackgroundColor": "#F5F6FA",
+    "navigationBarTextStyle": "black",
+    "backgroundTextStyle": "dark"
+  }
+}

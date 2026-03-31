@@ -1,0 +1,35 @@
+<view class="container pb-120">
+  <!-- Header -->
+  <view class="mb-32">
+    <view class="h1">确认适配标签</view>
+    <view class="small">逐条选择标签分类后保存</view>
+  </view>
+
+  <view class="items-list">
+    <block wx:for="{{items}}" wx:key="index">
+      <view class="card mb-32 shadow-sm">
+        <textarea 
+          class="input mb-32" 
+          value="{{item.text}}" 
+          data-idx="{{index}}" 
+          bindinput="onEditText" 
+          auto-height
+          style="min-height: 160rpx; width: 100%; box-sizing: border-box; font-size: 32rpx;"
+        />
+        
+        <view class="flex-row gap-16">
+          <text class="small" style="flex-shrink: 0; font-weight: 600;">标签分类</text>
+          <view class="flex-row gap-8" style="flex: 1; justify-content: flex-end;" data-idx="{{index}}" bindtap="onPickTag">
+            <text class="body" style="color: var(--primary); font-weight: 600;">{{selectedTagNames[index] || '点击选择'}}</text>
+            <text class="small" style="color: var(--primary);">❯</text>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <view class="flex-row gap-16 mt-32">
+    <button class="btn btn-secondary" style="flex: 1;" bindtap="onClose">返回</button>
+    <button class="btn btn-primary" style="flex: 1;" bindtap="onConfirm" loading="{{saving}}" disabled="{{saving}}">确认保存</button>
+  </view>
+</view>

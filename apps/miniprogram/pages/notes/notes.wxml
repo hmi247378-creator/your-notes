@@ -1,0 +1,114 @@
+<view class="container">
+  <!-- Top Bar -->
+  <view class="flex-between mb-32">
+    <view>
+      <view class="h1">全部笔记</view>
+      <view class="small">共 {{total}} 条记录</view>
+    </view>
+    <view class="avatar shadow-sm">{{userInitial}}</view>
+  </view>
+
+  <!-- Search & Filter Area -->
+  <view class="search-section card">
+    <view class="flex-row gap-12">
+      <view class="search-bar" style="flex: 1;">
+        <icon type="search" size="18" color="#94A3B8" />
+        <input 
+          class="body" 
+          placeholder="搜索关键词..." 
+          value="{{q}}" 
+          bindinput="onSearchInput" 
+          bindconfirm="onSearchConfirm"
+        />
+      </view>
+      <view class="tab-item" style="flex-shrink: 0; width: 64rpx; height: 64rpx; margin-right: 0;" bindtap="onSearchConfirm">
+        <text class="tab-icon" style="margin-bottom: 0;">🔍</text>
+      </view>
+      <view class="tab-item {{selectedTagId ? 'tab-item-active' : ''}}" style="flex-shrink: 0; width: 64rpx; height: 64rpx; margin-right: 0;" bindtap="onOpenTags">
+        <text class="tab-icon" style="margin-bottom: 0;">🏷</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Horizontal Tags Scroll -->
+  <scroll-view scroll-x class="tags-scroll mt-32" enable-flex>
+    <view 
+      class="tag-pill {{!selectedTagId ? 'active' : ''}}" 
+      bindtap="onSelectTag" 
+      data-id=""
+    >全部</view>
+    <block wx:for="{{tags}}" wx:key="id">
+      <view 
+        class="tag-pill {{selectedTagId === item.id ? 'active' : ''}}" 
+        bindtap="onSelectTag" 
+        data-id="{{item.id}}"
+      >
+        {{item.name}} <text class="tag-count" wx:if="{{item.count > 0}}">{{item.count}}</text>
+      </view>
+    </block>
+  </scroll-view>
+
+  <!-- Notes List -->
+  <view class="notes-list mt-32">
+    <block wx:for="{{notes}}" wx:key="id">
+      <view class="note-card card shadow-sm" bindtap="onEditNote" data-id="{{item.id}}">
+        <view class="flex-between mb-16">
+          <view class="h2" style="margin-bottom: 0;">{{item.title}}</view>
+          <view class="note-date small">{{item.createdAt}}</view>
+        </view>
+        <view class="body text-muted line-clamp-3">
+          {{item.content}}
+        </view>
+      </view>
+    </block>
+    
+    <view wx:if="{{notes.length === 0}}" class="empty-state">
+      <text class="empty-icon">📂</text>
+      <view class="body text-muted">还没有任何笔记哦</view>
+    </view>
+  </view>
+
+  <!-- Floating Action Button -->
+  <view class="fab shadow-md" bindtap="onOpenQuickModal">
+    <text>+</text>
+  </view>
+
+  <!-- Quick Note Modal -->
+  <view wx:if="{{showQuickModal}}" class="modal-overlay" catchtap="onCloseQuickModal">
+    <view class="modal-content card" catchtap="true">
+      <view class="h2 mb-32">新建灵感 ({{selectedTagName}})</view>
+      <textarea
+        class="input"
+        style="min-height: 300rpx; width: 100%; box-sizing: border-box; font-size: 34rpx;"
+        value="{{modalText}}"
+        bindinput="onModalTextInput"
+        placeholder="写下点什么..."
+        focus="{{showQuickModal}}"
+      />
+      <view class="flex-row gap-16 mt-32">
+        <button class="btn btn-secondary" style="flex: 1;" bindtap="onCloseQuickModal">取消</button>
+        <button class="btn btn-primary" style="flex: 1;" bindtap="onSubmitQuickModal" loading="{{modalSaving}}">保存</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- Tab Bar -->
+  <view class="tab-bar">
+    <view class="tab-item" bindtap="goHome">
+      <text class="tab-icon">✨</text>
+      <text class="tab-label">创作</text>
+    </view>
+    <view class="tab-item tab-item-active">
+      <text class="tab-icon">📖</text>
+      <text class="tab-label">笔记</text>
+    </view>
+    <view class="tab-item" bindtap="goStats">
+      <text class="tab-icon">📈</text>
+      <text class="tab-label">统计</text>
+    </view>
+    <view class="tab-item" bindtap="goReminders">
+      <text class="tab-icon">🔔</text>
+      <text class="tab-label">提醒</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,29 @@
+.btn-save {
+  background: var(--primary);
+  color: #FFFFFF;
+  padding: 0 48rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  box-shadow: 0 8rpx 20rpx rgba(124, 58, 237, 0.2);
+}
+
+.editor-card {
+  padding: 40rpx;
+  min-height: 70vh;
+}
+
+.editor-card .input {
+  background: transparent;
+  border: none;
+  font-size: 30rpx;
+}
+
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400rpx;
+}
+
+

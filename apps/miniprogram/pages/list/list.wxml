@@ -1,0 +1,68 @@
+<view style="padding: 24rpx; padding-bottom: 120rpx;">
+  <view class="card">
+    <!-- 筛选条件：标签 + 时间 -->
+    <view style="display: flex; gap: 16rpx; align-items: center;">
+      <picker
+        mode="selector"
+        range="{{tagOptions}}"
+        range-key="label"
+        value="{{selectedTagIndex}}"
+        bindchange="onPickTag"
+      >
+        <view class="input" style="flex: 1; font-size: 48rpx;">{{tagOptions[selectedTagIndex].label}}</view>
+      </picker>
+    </view>
+    <view style="display: flex; gap: 10rpx; margin-top: 12rpx;">
+      <picker mode="date" value="{{dateFrom}}" bindchange="onDateFrom">
+        <view class="input" style="flex: 1; font-size: 48rpx;">{{dateFrom || '开始日期'}}</view>
+      </picker>
+      <picker mode="date" value="{{dateTo}}" bindchange="onDateTo">
+        <view class="input" style="flex: 1; font-size: 48rpx;">{{dateTo || '结束日期'}}</view>
+      </picker>
+    </view>
+
+    <view style="margin-top: 18rpx;">
+      <block wx:for="{{items}}" wx:key="id">
+        <view class="card" style="margin-bottom: 16rpx; background: #fdf8f1; border-color: #ecdccc;">
+          <view style="font-size: 56rpx; font-weight: 600; line-height: 1.4;">
+            {{item.title}}
+          </view>
+          <view style="font-size: 52rpx; line-height: 1.5; margin-top: 4rpx;">{{item.contentPreview}}</view>
+          <view wx:if="{{item.tagsText}}" class="muted" style="font-size: 48rpx; margin-top: 6rpx;">{{item.tagsText}}</view>
+          <view style="display: flex; justify-content: space-between; align-items: center; margin-top: 8rpx;">
+            <view class="muted" style="font-size: 44rpx;">{{item.createdAt}}</view>
+            <view>
+              <text class="note-action" data-id="{{item.id}}" bindtap="onEdit">✎</text>
+              <text class="note-action" data-id="{{item.id}}" bindtap="onDelete">×</text>
+            </view>
+          </view>
+        </view>
+      </block>
+      <view class="muted" wx:if="{{items.length === 0}}">暂无记录</view>
+    </view>
+
+    <view style="display: flex; gap: 16rpx; margin-top: 18rpx;">
+      <button class="btn" style="flex: 1;" bindtap="refresh" loading="{{loading}}">刷新</button>
+      <button class="btn" style="flex: 1; background: #f4eadc; border-color: #e0d3c0; color: #625b52;" bindtap="back">返回</button>
+    </view>
+  </view>
+
+  <view class="bottom-nav">
+    <view class="nav-item" bindtap="goHome">
+      <text class="nav-icon">🏠</text>
+      <text class="nav-label">首页</text>
+    </view>
+    <view class="nav-item nav-item-active">
+      <text class="nav-icon">📄</text>
+      <text class="nav-label">列表</text>
+    </view>
+    <view class="nav-item" bindtap="goTags">
+      <text class="nav-icon">🏷</text>
+      <text class="nav-label">标签</text>
+    </view>
+    <view class="nav-item" bindtap="goStats">
+      <text class="nav-icon">📊</text>
+      <text class="nav-label">统计</text>
+    </view>
+  </view>
+</view>
