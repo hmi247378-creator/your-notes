@@ -14,12 +14,66 @@ const CreateNoteSchema = z.object({
 
 notes.get('/', async (c) => {
   const userId = c.get('jwtPayload').userId;
-  const { results } = await c.env.DB
-    .prepare('SELECT * FROM Note WHERE userId = ? AND deletedAt IS NULL ORDER BY createdAt DESC LIMIT 20')
-    .bind(userId)
+  const q = c.req.query('q');
+  const tagIds = c.req.query('tagIds');
+  const from = c.req.query('from');
+  const to = c.req.query('to');
+  const page = parseInt(c.req.query('page') || '1');
+  const pageSize = parseInt(c.req.query('pageSize') || '100');
+  const offset = (page - 1) * pageSize;
+
+  let where = 'userId = ? AND deletedAt IS NULL';
+  const params: any[] = [userId];
+
+  if (q) {
+    where += ' AND contentPlain LIKE ?';
+    params.push(`%${q}%`);
+  }
+  if (from) {
+    where += ' AND createdAt >= ?';
+    params.push(from);
+  }
+  if (to) {
+    where += ' AND createdAt <= ?';
+    params.push(to);
+  }
+  if (tagIds) {
+    // Simplified tagIds approach. For many tags this needs a subquery.
+    const tags = tagIds.split(',');
+    if (tags.length === 1) {
+      where += ' AND id IN (SELECT noteId FROM NoteTag WHERE tagId = ?)';
+      params.push(tags[0]);
+    } else {
+      where += ` AND id IN (SELECT noteId FROM NoteTag WHERE tagId IN (${tags.map(() => '?').join(',')}))`;
+      params.push(...tags);
+    }
+  }
+
+  // Get total count
+  const { results: countList } = await c.env.DB
+    .prepare(`SELECT COUNT(*) as total FROM Note WHERE ${where}`)
+    .bind(...params)
+    .all();
+  const total = (countList[0] as any).total || 0;
+
+  // Get items
+  const { results: notesList } = await c.env.DB
+    .prepare(`SELECT * FROM Note WHERE ${where} ORDER BY createdAt DESC LIMIT ? OFFSET ?`)
+    .bind(...params, pageSize, offset)
     .all();
 
-  return c.json(sendData(results));
+  // Attach tags to results
+  const items = await Promise.all(notesList.map(async (n: any) => {
+    const tIds = await db.findTagsByNoteId(c.env.DB, n.id);
+    return { ...n, tagIds: tIds };
+  }));
+
+  return c.json(sendData({ items, page, pageSize, total }));
+});
+
+notes.post('/reclassify-untagged', async (c) => {
+  // Placeholder: Real implementation would trigger AI re-classification
+  return c.json(sendData({ reclassifiedCount: 0, total: 0 }));
 });
 
 notes.post('/', async (c) => {

@@ -2,7 +2,7 @@
   "miniprogramRoot": "./",
   "projectname": "your-notes",
   "description": "你的笔记 - 小程序端（Phase 1 MVP）",
-  "appid": "wxb302caa4404b4c42",
+  "appid": "wx9ab4eaf0823cce9e",
   "setting": {
     "urlCheck": false,
     "es6": true,

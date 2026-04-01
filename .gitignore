@@ -8,5 +8,13 @@ dist
 .env.*.local
 *.log
 
+# Build artifacts
+out/
+.vercel/
+
+# SQL dumps and temporal files
+*.sql
+!schema.sql
+
 prisma/migrations
 

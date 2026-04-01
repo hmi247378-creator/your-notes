@@ -14,6 +14,26 @@ tags.get('/', async (c) => {
   return c.json(sendData(results));
 });
 
+tags.get('/tree', async (c) => {
+  const userId = c.get('jwtPayload').userId;
+  const { results } = await c.env.DB
+    .prepare('SELECT * FROM Tag WHERE userId = ? ORDER BY name ASC')
+    .bind(userId)
+    .all();
+
+  const buildTree = (nodes: any[], parentId: string | null = null): any[] => {
+    return nodes
+      .filter(node => node.parentId === parentId)
+      .map(node => ({
+        ...node,
+        children: buildTree(nodes, node.id)
+      }));
+  };
+
+  const tree = buildTree(results);
+  return c.json(sendData({ tags: tree }));
+});
+
 tags.post('/', async (c) => {
   const userId = c.get('jwtPayload').userId;
   const { name, color, parentId } = await c.req.json();
