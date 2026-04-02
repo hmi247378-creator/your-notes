@@ -248,28 +248,27 @@ export default function AnalysisPage() {
   }
 
   return (
-    <div className="col" style={{ gap: 12 }}>
+    <div className="col" style={{ gap: '2rem' }}>
       {/* 顶部标题栏 */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <div>
-          <h1 style={{ fontSize: 'var(--font-title)', fontWeight: 700, margin: 0 }}>分析报告</h1>
-          <p className="muted" style={{ marginTop: 6, fontSize: 'var(--font-body-sm)' }}>
-            生成与管理您的分析报告与导出数据
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, letterSpacing: '-0.02em' }}>分析报告</h1>
+          <p className="muted" style={{ marginTop: 8, fontSize: '1.125rem' }}>
+            生成与管理您的深度分析报告。
           </p>
         </div>
-        <div />
       </div>
 
-      <div className="col" style={{ gap: 16 }}>
+      <div className="col" style={{ gap: '1.5rem' }}>
           {/* 生成新报告 */}
-          <div className="dashboardCard">
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ fontWeight: 600, fontSize: 'var(--font-heading)', marginBottom: 4 }}>生成新报告</div>
+          <div className="dashboardCard" style={{ boxShadow: 'var(--shadow-md)', border: 'none' }}>
+            <div style={{ marginBottom: '1.5rem' }}>
+              <div style={{ fontWeight: 700, fontSize: '1.25rem', marginBottom: 4, color: 'var(--text)' }}>✨ 生成智能建议</div>
               <p className="muted" style={{ fontSize: 'var(--font-body-sm)', margin: 0 }}>
-                根据自定义筛选条件生成分析报告与导出数据
+                基于 AI 分析您的笔记内容，生成阶段性总结与行动建议。
               </p>
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'flex-end' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'flex-end' }}>
               <div>
                 <label className="muted" style={{ fontSize: 'var(--font-small)', display: 'block', marginBottom: 4 }}>
                   开始日期

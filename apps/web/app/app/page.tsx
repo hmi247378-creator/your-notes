@@ -163,30 +163,20 @@ export default function AppPage() {
 
   return (
     <div className="container">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-        <div>
-          <div style={{ fontSize: 'var(--font-title)', fontWeight: 700 }}>你的笔记</div>
-        </div>
-        <div className="row">
-          {token ? (
-            <button className="btn btnPrimary" onClick={() => setOpenQuickInputModal(true)}>
-              快速录入
-            </button>
-          ) : null}
-          <button className="btn" onClick={logout}>
-            退出
-          </button>
-        </div>
-      </div>
-
       {err ? (
-        <div className="card" style={{ marginTop: 12, borderColor: 'rgba(220,38,38,0.4)', background: 'rgba(220,38,38,0.08)' }}>
+        <div className="card" style={{ marginTop: 0, borderColor: 'rgba(220,38,38,0.4)', background: 'rgba(220,38,38,0.08)' }}>
           {err}
         </div>
       ) : null}
 
-      <div className="row" style={{ marginTop: 12, alignItems: 'flex-start', gap: 8 }}>
-        <div className="card tagManagerCard" style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' }}>
+      <div className="row" style={{ marginTop: '1rem', alignItems: 'flex-start', gap: 8 }}>
+        <div className="card tagManagerCard" style={{ 
+          maxHeight: 'calc(100vh - 100px)', 
+          overflowY: 'auto',
+          position: 'sticky',
+          top: '72px',
+          zIndex: 10
+        }}>
           {token ? (
             <TagManager
               tags={tags}
@@ -223,6 +213,10 @@ export default function AppPage() {
         <div className="col" style={{ flex: 1 }}>
           <NoteList
             items={selectedTagId ? (notesByTag[selectedTagId] ?? []) : notes}
+            total={notesTotal}
+            page={notesPage}
+            pageSize={notesPageSize}
+            onPageChange={setNotesPage}
             selectedId={selectedNoteId}
             onSelect={setSelectedNoteId}
             viewMode={viewMode}
@@ -230,11 +224,13 @@ export default function AppPage() {
             onFilterChange={(f) => {
               setFilter(f);
               setSelectedNoteId(null);
+              setNotesPage(1);
             }}
             selectedTagName={selectedTagId ? getTagDisplayPath(tags, selectedTagId) : null}
             selectedTagId={selectedTagId}
             onViewModeChange={setViewMode}
             onEdit={(noteId) => setEditNoteId(noteId)}
+            onQuickInput={() => setOpenQuickInputModal(true)}
             onDelete={async (noteId) => {
               if (!token) return;
               const ok = window.confirm('确认删除这条记录？（可在后续版本增加回收站）');

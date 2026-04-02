@@ -226,34 +226,21 @@ export default function NotesPage() {
   }
 
   return (
-    <div className="col" style={{ gap: 12 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-        <div>
-          <h1 style={{ fontSize: 'var(--font-title)', fontWeight: 700, margin: 0 }}>所有笔记</h1>
-          <p className="muted" style={{ marginTop: 6, fontSize: 'var(--font-body-sm)' }}>
-            管理您的笔记与标签分类
-          </p>
-        </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <button
-            type="button"
-            className="btn btnPrimary"
-            onClick={() => setOpenQuickInputModal(true)}
-          >
-            <span style={{ marginRight: 6 }}>+</span>
-            快速录入
-          </button>
-        </div>
-      </div>
-
+    <div className="col" style={{ gap: 0 }}>
       {err ? (
         <div className="card" style={{ borderColor: 'rgba(220,38,38,0.4)', background: 'rgba(220,38,38,0.08)' }}>
           {err}
         </div>
       ) : null}
 
-      <div className="row" style={{ alignItems: 'flex-start', gap: 8 }}>
-        <div className="card tagManagerCard" style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' }}>
+      <div className="row" style={{ marginTop: '1rem', alignItems: 'flex-start', gap: 8 }}>
+        <div className="card tagManagerCard" style={{ 
+          maxHeight: 'calc(100vh - 120px)', 
+          overflowY: 'auto', 
+          position: 'sticky', 
+          top: '72px',
+          zIndex: 20 
+        }}>
           {token ? (
             <TagManager
               tags={tags}

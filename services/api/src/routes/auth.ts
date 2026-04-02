@@ -27,7 +27,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
     try {
       user = await prisma.user.create({
         data: { email: body.data.email, passwordHash, nickname: body.data.nickname },
-        select: { id: true, nickname: true },
+        select: { id: true, nickname: true, email: true },
       });
     } catch (e: any) {
       // Prisma unique constraint violation
@@ -49,12 +49,12 @@ export async function registerAuthRoutes(app: FastifyInstance) {
     if (!ok) throw unauthorized('邮箱或密码错误');
 
     const token = app.jwt.sign({ userId: user.id });
-    return sendData(reply, { token, user: { id: user.id, nickname: user.nickname } });
+    return sendData(reply, { token, user: { id: user.id, nickname: user.nickname, email: user.email } });
   });
 
   app.get('/api/auth/me', { preHandler: requireAuth }, async (req, reply) => {
     const userId = req.user.userId;
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, nickname: true } });
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, nickname: true, email: true } });
     if (!user) throw unauthorized();
     return sendData(reply, user);
   });

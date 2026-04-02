@@ -35,54 +35,74 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="container">
-      <div className="card" style={{ maxWidth: 520, margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center' }}>
-          <div>
-            <div style={{ fontSize: 'var(--font-title)', fontWeight: 700 }}>你的笔记</div>
-            <div className="muted" style={{ marginTop: 6, fontSize: 'var(--font-body-sm)' }}>
-              一句话记录，自动分门别类
-            </div>
-          </div>
-          <div className="row">
-            <button className={`btn ${mode === 'login' ? 'btnPrimary' : ''}`} onClick={() => setMode('login')}>
-              登录
-            </button>
-            <button
-              className={`btn ${mode === 'register' ? 'btnPrimary' : ''}`}
-              onClick={() => setMode('register')}
-            >
-              注册
-            </button>
-          </div>
+    <div style={{ 
+      minHeight: '100vh', 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      background: 'radial-gradient(circle at top left, var(--accent-soft), transparent), radial-gradient(circle at bottom right, rgba(99, 102, 241, 0.05), transparent)',
+      padding: '1.5rem'
+    }}>
+      <div className="card" style={{ maxWidth: 460, width: '100%', padding: '2.5rem', boxShadow: 'var(--shadow-xl)', border: 'none' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📓</div>
+          <h1 className="sidebarTitle" style={{ fontSize: '2.25rem', marginBottom: '0.5rem', display: 'block' }}>你的笔记</h1>
+          <p className="muted" style={{ fontSize: '1rem', margin: 0 }}>
+            一句话记录，智能分门别类
+          </p>
         </div>
 
-        <div className="col" style={{ marginTop: 16 }}>
+        <div style={{ display: 'flex', background: 'var(--panel2)', padding: '4px', borderRadius: '12px', marginBottom: '1.5rem' }}>
+          <button 
+            className={`btn ${mode === 'login' ? 'btnPrimary' : ''}`} 
+            style={{ flex: 1, border: 'none', boxShadow: mode === 'login' ? 'var(--shadow-sm)' : 'none' }}
+            onClick={() => setMode('login')}
+          >
+            登录
+          </button>
+          <button
+            className={`btn ${mode === 'register' ? 'btnPrimary' : ''}`}
+            style={{ flex: 1, border: 'none', boxShadow: mode === 'register' ? 'var(--shadow-sm)' : 'none' }}
+            onClick={() => setMode('register')}
+          >
+            注册
+          </button>
+        </div>
+
+        <div className="col" style={{ gap: '1rem' }}>
           {mode === 'register' ? (
-            <input className="input" placeholder="昵称（可选）" value={nickname} onChange={(e) => setNickname(e.target.value)} />
+            <input className="input" placeholder="您的昵称" value={nickname} onChange={(e) => setNickname(e.target.value)} />
           ) : null}
-          <input className="input" placeholder="邮箱" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input className="input" placeholder="邮箱地址" value={email} onChange={(e) => setEmail(e.target.value)} />
           <input
             className="input"
-            placeholder="密码（>=6位）"
+            placeholder="登录密码"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
 
           {error ? (
-            <div className="card" style={{ borderColor: 'rgba(220,38,38,0.4)', background: 'rgba(220,38,38,0.08)' }}>
-              {error}
+            <div style={{ 
+              padding: '0.875rem', 
+              borderRadius: '10px', 
+              fontSize: '0.8125rem', 
+              background: 'rgba(239, 68, 68, 0.1)', 
+              color: 'var(--danger)',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
+              fontWeight: 500
+            }}>
+              ⚠️ {error}
             </div>
           ) : null}
 
-          <button className="btn btnPrimary" onClick={submit} disabled={loading}>
-            {loading ? '处理中…' : title}
+          <button className="btn btnPrimary" style={{ padding: '0.875rem', fontSize: '1rem', marginTop: '0.5rem' }} onClick={submit} disabled={loading}>
+            {loading ? '同步中…' : mode === 'login' ? '开启智能笔记' : '立即注册账号'}
           </button>
 
-          <div className="muted" style={{ fontSize: 'var(--font-small)' }}>
-            API 地址：{process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3001/api'}
-          </div>
+          <p className="muted" style={{ fontSize: '0.75rem', textAlign: 'center', marginTop: '1rem' }}>
+            Powered by Cloudflare Workers AI & D1
+          </p>
         </div>
       </div>
     </div>

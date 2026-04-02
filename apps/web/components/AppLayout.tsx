@@ -58,7 +58,7 @@ function MoonIcon() {
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [userName, setUserName] = useState<string | null>(null);
+  const [user, setUser] = useState<{ id: string; nickname: string; email: string } | null>(null);
 
   function logout() {
     localStorage.removeItem('yn_token');
@@ -67,34 +67,41 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   const isNotesPage = pathname === '/app/notes' || pathname.startsWith('/app/notes');
 
-  // 获取用户信息用于右上角展示
   useEffect(() => {
     const t = typeof window !== 'undefined' ? localStorage.getItem('yn_token') : null;
     if (!t) return;
-    fetch(`${location.origin}/api/health`) // 轻探测，确保 base 匹配；忽略结果
-      .catch(() => {});
     fetch((process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001/api') + '/auth/me', {
       headers: { Authorization: `Bearer ${t}` },
     })
       .then((r) => r.ok ? r.json() : Promise.reject(null))
-      .then((j) => setUserName(j?.data?.nickname || '用户'))
-      .catch(() => setUserName('用户'));
+      .then((j) => {
+        const userData = j?.data || j;
+        setUser({
+          id: userData?.id || '未知ID',
+          nickname: userData?.nickname || '用户',
+          email: userData?.email || 'unknown@example.com'
+        });
+      })
+      .catch(() => setUser({ id: 'N/A', nickname: '用户', email: '-' }));
   }, []);
 
   return (
     <div className="appLayout">
       <header className="topbar">
         <div className="topbarInner">
-          <div className="topbarBrand">
-            <span className="sidebarLogo">📁</span>
+          <Link href="/app/notes" className="topbarBrand">
+            <span style={{ fontSize: '1.5rem' }}>📓</span>
             <span className="sidebarTitle">你的笔记</span>
-          </div>
+          </Link>
           <nav className="topnav">
-            {NAV_ITEMS.map(({ href, label }) => {
+            {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
               const isActive = pathname === href || (href !== '/app' && pathname.startsWith(href));
               return (
                 <Link key={href} href={href} className={`topnavItem ${isActive ? 'active' : ''}`}>
-                  {label}
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Icon />
+                    {label}
+                  </span>
                 </Link>
               );
             })}
@@ -105,8 +112,16 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <MoonIcon />
               </button>
             ) : null}
-            <div className="userBadge">{userName ?? ''}</div>
-            <button type="button" className="topbarBtn" onClick={logout}>
+            <Link 
+              href="/app/profile" 
+              className="userBadge" 
+              title={`昵称: ${user?.nickname || '用户'}\n用户ID: ${user?.id || 'N/A'}`}
+              style={{ textDecoration: 'none' }}
+            >
+              <span style={{ opacity: 0.6, marginRight: '4px' }}>👤</span>
+              <span style={{ fontWeight: 700 }}>{user?.email || '加载中...'}</span>
+            </Link>
+            <button type="button" className="btn" style={{ padding: '6px 12px' }} onClick={logout}>
               退出
             </button>
           </div>

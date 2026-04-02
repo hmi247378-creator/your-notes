@@ -41,29 +41,30 @@ export function TagManager({
 
   return (
     <div className="col tagManagerInner">
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
-        <div style={{ fontWeight: 600, fontSize: 14 }}>{title}</div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '0 0.5rem' }}>
+        <div style={{ fontWeight: 800, fontSize: '0.875rem', color: 'var(--text)', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.8 }}>{title}</div>
         {onManageTags ? (
           <button
-            className="btn"
+            className="btn btnPrimary"
             onClick={onManageTags}
             title="新建标签"
             style={{
-              width: 22,
-              height: 22,
+              width: 24,
+              height: 24,
               padding: 0,
-              borderRadius: 999,
+              borderRadius: '8px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: 15,
+              fontSize: '1rem',
+              boxShadow: 'var(--shadow-sm)'
             }}
           >
             +
           </button>
         ) : null}
       </div>
-      {empty ? <div className="muted" style={{ fontSize: 12 }}>还没有标签。点击右上角“新建标签”创建。</div> : null}
+      {empty ? <div className="muted" style={{ fontSize: '0.8125rem', padding: '0.5rem' }}>还没有标签。点击右上角“+”号开始创建。</div> : null}
       <TagTree
         tags={tags}
         notesByTag={notesByTag}

@@ -115,7 +115,7 @@ export default function DashboardPage() {
     return entries;
   }, [tagCounts, tags]);
 
-  const COLORS = ['#2563eb', '#f97316', '#22c55e', '#ec4899'];
+  const COLORS = ['var(--accent)', '#f97316', '#10b981', '#ec4899', '#8b5cf6'];
 
   // 热门标签
   const hotTags = useMemo(() => {
@@ -131,49 +131,60 @@ export default function DashboardPage() {
   const reminderCount = 12;
 
   return (
-    <div className="col" style={{ gap: 24 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
+    <div className="col" style={{ gap: '2rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <div>
-          <h1 style={{ fontSize: 'var(--font-title)', fontWeight: 700, margin: 0 }}>数据概览</h1>
-          <p className="muted" style={{ marginTop: 6, fontSize: 'var(--font-body-sm)' }}>
-            欢迎回来，这是您最近30天的笔记统计。
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, letterSpacing: '-0.02em' }}>数据概览</h1>
+          <p className="muted" style={{ marginTop: 8, fontSize: '1.125rem' }}>
+            欢迎回来，这是您的智能笔记洞察。
           </p>
         </div>
-        <div />
       </div>
 
       {/* 关键指标卡片 */}
-      <div className="dashboardCardGrid4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
-        <div className="dashboardCard">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-            <span style={{ fontSize: 20 }}>📄</span>
-            <span className="dashboardCardTitle">总记录数</span>
+      <div className="dashboardCardGrid4" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem' }}>
+        <div className="dashboardCard" style={{ boxShadow: 'var(--shadow-md)', border: 'none', background: 'linear-gradient(135deg, var(--panel) 0%, var(--bg) 100%)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+            <span style={{ fontSize: '1.5rem', background: 'var(--accent-soft)', padding: '8px', borderRadius: '12px' }}>📊</span>
+            <span className="dashboardCardTitle" style={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>总记录数</span>
           </div>
-          <div className="dashboardCardValue">{loading ? '...' : totalNotes.toLocaleString()}</div>
-          <div className="dashboardCardChange positive">+12.5%</div>
+          <div className="dashboardCardValue" style={{ fontSize: '2.5rem', fontWeight: 800 }}>{loading ? '...' : totalNotes.toLocaleString()}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+            <span className="dashboardCardChange positive" style={{ fontWeight: 700 }}>↑ 12.5%</span>
+            <span className="muted" style={{ fontSize: '0.75rem' }}>较上月</span>
+          </div>
         </div>
-        <div className="dashboardCard">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-            <span style={{ fontSize: 20 }}>✓</span>
-            <span className="dashboardCardTitle">任务完成率</span>
+        
+        <div className="dashboardCard" style={{ boxShadow: 'var(--shadow-md)', border: 'none' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+            <span style={{ fontSize: '1.5rem', background: 'rgba(16, 185, 129, 0.1)', padding: '8px', borderRadius: '12px' }}>✅</span>
+            <span className="dashboardCardTitle" style={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>任务完成率</span>
           </div>
-          <div className="dashboardCardValue">{taskRate}%</div>
-          <div className="dashboardCardChange positive">+4.2%</div>
+          <div className="dashboardCardValue" style={{ fontSize: '2.5rem', fontWeight: 800 }}>{taskRate}%</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+            <span className="dashboardCardChange positive" style={{ fontWeight: 700 }}>↑ 4.2%</span>
+            <span className="muted" style={{ fontSize: '0.75rem' }}>正在稳步提升</span>
+          </div>
         </div>
-        <div className="dashboardCard">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-            <span style={{ fontSize: 20 }}>⭐</span>
-            <span className="dashboardCardTitle">最活跃分类</span>
+
+        <div className="dashboardCard" style={{ boxShadow: 'var(--shadow-md)', border: 'none' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+            <span style={{ fontSize: '1.5rem', background: 'rgba(249, 115, 22, 0.1)', padding: '8px', borderRadius: '12px' }}>🔥</span>
+            <span className="dashboardCardTitle" style={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>最活跃分类</span>
           </div>
-          <div className="dashboardCardValue" style={{ fontSize: 20 }}>{topCategory}</div>
+          <div className="dashboardCardValue" style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--accent)', minHeight: '3.75rem', display: 'flex', alignItems: 'center' }}>{topCategory}</div>
         </div>
-        <div className="dashboardCard">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-            <span style={{ fontSize: 20 }}>🕐</span>
-            <span className="dashboardCardTitle">待处理提醒</span>
+
+        <div className="dashboardCard" style={{ boxShadow: 'var(--shadow-md)', border: 'none' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+            <span style={{ fontSize: '1.5rem', background: 'rgba(239, 68, 68, 0.1)', padding: '8px', borderRadius: '12px' }}>🔔</span>
+            <span className="dashboardCardTitle" style={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>待处理提醒</span>
           </div>
-          <div className="dashboardCardValue">{reminderCount}</div>
-          <div className="dashboardCardChange negative">-2.1%</div>
+          <div className="dashboardCardValue" style={{ fontSize: '2.5rem', fontWeight: 800 }}>{reminderCount}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+            <span className="dashboardCardChange negative" style={{ fontWeight: 700 }}>↓ 2.1%</span>
+            <span className="muted" style={{ fontSize: '0.75rem' }}>需及时处理</span>
+          </div>
         </div>
       </div>
 

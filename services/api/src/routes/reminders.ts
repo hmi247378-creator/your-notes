@@ -88,17 +88,33 @@ export async function registerReminderRoutes(app: FastifyInstance) {
     const querySchema = z.object({
       q: z.string().optional(),
       status: z.enum(['待处理', '进行中', '已完成']).optional(),
+      date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+      tagIds: z.string().optional(),
       page: z.coerce.number().int().positive().default(1),
       pageSize: z.coerce.number().int().positive().max(100).default(20),
     });
     const q = querySchema.safeParse(req.query);
     if (!q.success) throw badRequest('Invalid query', q.error.flatten());
 
+    let dateWhere: any = {};
+    if (q.data.date) {
+      const start = new Date(q.data.date);
+      const end = new Date(q.data.date);
+      end.setDate(end.getDate() + 1);
+      dateWhere = { remindAt: { gte: start, lt: end } };
+    }
+
+    const tagIds = q.data.tagIds?.split(',').filter(Boolean);
+
     const where: any = {
       userId,
+      ...dateWhere,
       ...(q.data.status ? { status: q.data.status } : {}),
       ...(q.data.q?.trim()
         ? { note: { contentPlain: { contains: q.data.q.trim(), mode: 'insensitive' } } }
+        : {}),
+      ...(tagIds?.length
+        ? { note: { noteTags: { some: { tagId: { in: tagIds } } } } }
         : {}),
     };
 
@@ -172,6 +188,36 @@ export async function registerReminderRoutes(app: FastifyInstance) {
     });
 
     return sendData(reply, updated);
+  });
+
+  /** 获取提醒事项的分标签计数 */
+  app.get('/api/reminders/tag-counts', { preHandler: requireAuth }, async (req, reply) => {
+    const userId = req.user.userId;
+    
+    // 获取所有提醒事项及其关联笔记的标签
+    const reminders = await prisma.reminder.findMany({
+      where: { userId },
+      select: {
+        note: {
+          select: {
+            noteTags: {
+              select: { tagId: true }
+            }
+          }
+        }
+      }
+    });
+
+    const counts: Record<string, number> = {};
+    for (const r of reminders) {
+      if (r.note?.noteTags) {
+        for (const nt of r.note.noteTags) {
+          counts[nt.tagId] = (counts[nt.tagId] || 0) + 1;
+        }
+      }
+    }
+
+    return sendData(reply, { counts });
   });
 
   /** 从提醒中移除 */
