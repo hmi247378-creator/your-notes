@@ -245,6 +245,15 @@ export default function AppPage() {
             onViewModeChange={setViewMode}
             onEdit={(noteId) => setEditNoteId(noteId)}
             onAddReminder={(noteId) => setAddReminderNoteId(noteId)}
+            onNewRecord={
+              selectedTagId && token
+                ? () => {
+                    const tag = findTagById(tags, selectedTagId);
+                    const name = tag?.name ?? getTagDisplayPath(tags, selectedTagId) ?? '未命名';
+                    setRecordTag({ id: selectedTagId, name });
+                  }
+                : undefined
+            }
             onQuickInput={() => setOpenQuickInputModal(true)}
             onDelete={async (noteId) => {
               if (!token) return;

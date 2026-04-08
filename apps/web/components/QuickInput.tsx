@@ -197,19 +197,29 @@ export function QuickInput({
             onChange={(e) => setRecordedAt(e.target.value)}
             style={{ width: 'auto', minWidth: 140 }}
           />
-          <button className="btn" onClick={classify} disabled={loading || text.trim().length === 0}>
-            推荐标签
-          </button>
-          <button className="btn btnPrimary" onClick={adapt} disabled={!canSubmit}>
-            {loading ? '智能适配中…' : '智能适配'}
-          </button>
+          {selectedTagId ? (
+            <button className="btn btnPrimary" onClick={() => applySuggestion(selectedTagId)} disabled={!canSubmit}>
+              {loading ? '保存中…' : '直接保存'}
+            </button>
+          ) : (
+            <>
+              <button className="btn" onClick={classify} disabled={loading || text.trim().length === 0}>
+                推荐标签
+              </button>
+              <button className="btn btnPrimary" onClick={adapt} disabled={!canSubmit}>
+                {loading ? '智能适配中…' : '智能适配'}
+              </button>
+            </>
+          )}
         </div>
       </div>
 
       <div className="col" style={{ marginTop: 12 }}>
         <textarea
           className="textarea"
-          placeholder="输入内容… 推荐用序号（1、2、）区分多条事项，或用「感悟：」等标签+冒号表示整段为一条，点击「智能适配」自动拆分并归类"
+          placeholder={selectedTagId 
+            ? "输入内容，将直接保存到当前分类... 推荐用序号（1、2、）区分多条事项" 
+            : "输入内容… 推荐用序号（1、2、）区分多条事项，或用「感悟：」等标签+冒号表示整段为一条，点击「智能适配」自动拆分并归类"}
           value={text}
           onChange={(e) => setText(e.target.value)}
           style={inModal ? { minHeight: 192 } : undefined}
