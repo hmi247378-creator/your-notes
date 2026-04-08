@@ -6,7 +6,8 @@ import { sendData } from '../http/reply.js';
 import { requireAuth } from '../plugins/auth.js';
 
 const CreateReminderSchema = z.object({
-  noteId: z.string().uuid(),
+  /** 笔记 ID，支持实时生成的虚拟 ID (batch:xxx, date:xxx) */
+  noteId: z.string().min(1),
   /** 提醒日期时间，支持 ISO 8601 或 YYYY-MM-DD、YYYY-MM-DDTHH:mm 等格式 */
   remindAt: z.string().min(1).optional(),
 });
@@ -21,16 +22,52 @@ export async function registerReminderRoutes(app: FastifyInstance) {
   app.post('/api/reminders', { preHandler: requireAuth }, async (req, reply) => {
     const userId = req.user.userId;
     const body = CreateReminderSchema.safeParse(req.body);
-    if (!body.success) throw badRequest('Invalid payload', body.error.flatten());
+    if (!body.success) {
+      console.error('Reminder validation failed. Body:', req.body, 'Error:', body.error.format());
+      throw badRequest(`Invalid payload: ${JSON.stringify(body.error.flatten())}. Received: ${JSON.stringify(req.body)}`, body.error.flatten());
+    }
+
+    let targetNoteId = body.data.noteId;
+
+    // 处理虚拟 ID：batch: 或 date:
+    if (targetNoteId.startsWith('batch:')) {
+      const batchId = targetNoteId.replace(/^batch:/, '');
+      const firstNote = await prisma.note.findFirst({
+        where: { batchId, userId, deletedAt: null },
+        select: { id: true },
+        orderBy: { createdAt: 'asc' },
+      });
+      if (!firstNote) throw notFound('Batch notes not found');
+      targetNoteId = firstNote.id;
+    } else if (targetNoteId.startsWith('date:')) {
+      const dateStr = targetNoteId.replace(/^date:/, '');
+      const from = new Date(dateStr + 'T00:00:00');
+      const to = new Date(dateStr + 'T23:59:59.999');
+      const firstNote = await prisma.note.findFirst({
+        where: {
+          userId,
+          deletedAt: null,
+          batchId: null,
+          OR: [
+            { recordedAt: { gte: from, lte: to } },
+            { recordedAt: null, createdAt: { gte: from, lte: to } },
+          ],
+        },
+        select: { id: true },
+        orderBy: { createdAt: 'asc' },
+      });
+      if (!firstNote) throw notFound('Notes for this date not found');
+      targetNoteId = firstNote.id;
+    }
 
     const note = await prisma.note.findFirst({
-      where: { id: body.data.noteId, userId, deletedAt: null },
+      where: { id: targetNoteId, userId, deletedAt: null },
       select: { id: true, contentPlain: true, recordedAt: true, createdAt: true },
     });
     if (!note) throw notFound('Note not found');
 
     const existing = await prisma.reminder.findFirst({
-      where: { userId, noteId: body.data.noteId },
+      where: { userId, noteId: targetNoteId },
       select: { id: true, noteId: true, status: true, remindAt: true, createdAt: true },
     });
 
@@ -61,7 +98,7 @@ export async function registerReminderRoutes(app: FastifyInstance) {
     }
 
     const created = await prisma.reminder.create({
-      data: { userId, noteId: body.data.noteId, ...(remindAtVal ? { remindAt: remindAtVal } : {}) },
+      data: { userId, noteId: targetNoteId, ...(remindAtVal ? { remindAt: remindAtVal } : {}) },
       select: {
         id: true,
         noteId: true,

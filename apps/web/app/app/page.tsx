@@ -10,6 +10,7 @@ import { TagEditModal } from '@/components/TagEditModal';
 import { QuickRecordModal } from '@/components/QuickRecordModal';
 import { QuickInputModal } from '@/components/QuickInputModal';
 import { NoteEditModal } from '@/components/NoteEditModal';
+import { Modal } from '@/components/Modal';
 import {
   NoteList,
   type NoteItem,
@@ -61,6 +62,9 @@ export default function AppPage() {
   const [editTag, setEditTag] = useState<TagNode | null>(null);
   const [recordTag, setRecordTag] = useState<{ id: string; name: string } | null>(null);
   const [editNoteId, setEditNoteId] = useState<string | null>(null);
+  const [addReminderNoteId, setAddReminderNoteId] = useState<string | null>(null);
+  const [addReminderStep, setAddReminderStep] = useState<'confirm' | 'date'>('confirm');
+  const [addReminderDate, setAddReminderDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [reclassifyLoading, setReclassifyLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -80,9 +84,11 @@ export default function AppPage() {
   }, [filter, selectedTagId]);
 
   useEffect(() => {
-    const t = localStorage.getItem('yn_token');
-    if (!t) router.replace('/login');
-    else setToken(t);
+    if (typeof window !== 'undefined') {
+      const t = localStorage.getItem('yn_token');
+      if (!t) router.replace('/login');
+      else setToken(t);
+    }
   }, [router]);
 
   function buildNotesByTag(allNotes: NoteItem[], tagIds: string[]): Record<string, NoteItem[]> {
@@ -119,7 +125,9 @@ export default function AppPage() {
       setNotesByTag(notesByTag);
     } catch (e: any) {
       if (e?.code === 'UNAUTHORIZED') {
-        localStorage.removeItem('yn_token');
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('yn_token');
+        }
         router.replace('/login');
         return;
       }
@@ -135,7 +143,9 @@ export default function AppPage() {
   }, [token, listQuery]);
 
   function logout() {
-    localStorage.removeItem('yn_token');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('yn_token');
+    }
     router.replace('/login');
   }
 
@@ -150,9 +160,13 @@ export default function AppPage() {
       });
       await loadAll(token);
       if (res.reclassifiedCount > 0) {
-        alert(`已重分类 ${res.reclassifiedCount} 条未归类的记录`);
+        if (typeof window !== 'undefined') {
+          alert(`已重分类 ${res.reclassifiedCount} 条未归类的记录`);
+        }
       } else {
-        alert(res.total === 0 ? '暂无未归类的记录' : '未归类记录无法自动匹配到合适标签，可手动编辑');
+        if (typeof window !== 'undefined') {
+          alert(res.total === 0 ? '暂无未归类的记录' : '未归类记录无法自动匹配到合适标签，可手动编辑');
+        }
       }
     } catch (e: any) {
       setErr(e?.message ?? '重分类失败');
@@ -196,7 +210,7 @@ export default function AppPage() {
               onManageTags={() => setOpenCreateTag(true)}
               onDelete={async (noteId) => {
                 if (!token) return;
-                const ok = window.confirm('确认删除这条记录？');
+                const ok = typeof window !== 'undefined' && window.confirm('确认删除这条记录？');
                 if (!ok) return;
                 try {
                   await apiFetch(`/notes/${noteId}`, { method: 'DELETE', token });
@@ -230,10 +244,11 @@ export default function AppPage() {
             selectedTagId={selectedTagId}
             onViewModeChange={setViewMode}
             onEdit={(noteId) => setEditNoteId(noteId)}
+            onAddReminder={(noteId) => setAddReminderNoteId(noteId)}
             onQuickInput={() => setOpenQuickInputModal(true)}
             onDelete={async (noteId) => {
               if (!token) return;
-              const ok = window.confirm('确认删除这条记录？（可在后续版本增加回收站）');
+              const ok = typeof window !== 'undefined' && window.confirm('确认删除这条记录？（可在后续版本增加回收站）');
               if (!ok) return;
               try {
                 await apiFetch(`/notes/${noteId}`, { method: 'DELETE', token });
@@ -301,7 +316,99 @@ export default function AppPage() {
           onSuccess={(result) => loadAll(token, result?.selectTagId ? { selectTagId: result.selectTagId } : undefined)}
         />
       ) : null}
+
+      {addReminderNoteId && token ? (
+        <Modal
+          title={addReminderStep === 'confirm' ? '加入提醒' : '选择提醒日期'}
+          open={!!addReminderNoteId}
+          onClose={() => {
+            setAddReminderNoteId(null);
+            setAddReminderStep('confirm');
+            setAddReminderDate('');
+          }}
+          contentWidth={400}
+        >
+          <div className="col" style={{ gap: 16 }}>
+            {addReminderStep === 'confirm' ? (
+              <>
+                <p style={{ margin: 0, fontSize: 'var(--font-body-sm)' }}>
+                  确认将此项加入提醒任务列表？
+                </p>
+                <div className="row" style={{ justifyContent: 'flex-end', gap: 8 }}>
+                  <button
+                    type="button"
+                    className="btn"
+                    onClick={() => {
+                      setAddReminderNoteId(null);
+                      setAddReminderStep('confirm');
+                    }}
+                  >
+                    取消
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btnPrimary"
+                    onClick={() => setAddReminderStep('date')}
+                  >
+                    确定
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  <label style={{ display: 'block', fontSize: 'var(--font-small)', color: 'var(--muted)', marginBottom: 6 }}>
+                    提醒日期
+                  </label>
+                  <input
+                    type="date"
+                    className="input"
+                    value={addReminderDate}
+                    onChange={(e) => setAddReminderDate(e.target.value)}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+                <div className="row" style={{ justifyContent: 'flex-end', gap: 8 }}>
+                  <button
+                    type="button"
+                    className="btn"
+                    onClick={() => setAddReminderStep('confirm')}
+                  >
+                    返回
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btnPrimary"
+                    disabled={!addReminderDate.trim()}
+                    onClick={async () => {
+                      if (!addReminderNoteId || !addReminderDate.trim()) return;
+                      try {
+                        const remindAt = `${addReminderDate.trim()}T09:00:00`;
+                        await apiFetch('/reminders', {
+                          method: 'POST',
+                          token,
+                          body: JSON.stringify({ noteId: addReminderNoteId, remindAt }),
+                        });
+                        setAddReminderNoteId(null);
+                        setAddReminderStep('confirm');
+                        setAddReminderDate('');
+                        if (typeof window !== 'undefined') alert('已添加到提醒事项');
+                      } catch (e: any) {
+                        if (e?.code === 'UNAUTHORIZED') return;
+                        setErr(e?.message ?? '添加失败');
+                        setAddReminderNoteId(null);
+                        setAddReminderStep('confirm');
+                      }
+                    }}
+                  >
+                    确定
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </Modal>
+      ) : null}
     </div>
   );
 }
-

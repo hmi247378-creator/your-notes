@@ -7,9 +7,9 @@ import { sendData } from '../http/reply.js';
 import { requireAuth } from '../plugins/auth.js';
 
 const RegisterSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-  nickname: z.string().min(1).max(50).optional(),
+  email: z.string().email('请输入有效的邮箱地址'),
+  password: z.string().min(6, '密码至少需要 6 位'),
+  nickname: z.string().max(50).optional().or(z.literal('')),
 });
 
 const LoginSchema = z.object({

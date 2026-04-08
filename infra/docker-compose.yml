@@ -3,9 +3,9 @@ services:
     image: postgres:16-alpine
     container_name: your-notes-postgres
     environment:
-      POSTGRES_USER: yournotes
-      POSTGRES_PASSWORD: yournotes
-      POSTGRES_DB: yournotes
+      POSTGRES_USER: ${POSTGRES_USER:-yournotes}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-yournotes}
+      POSTGRES_DB: ${POSTGRES_DB:-yournotes}
     ports:
       - "5432:5432"
     volumes:
@@ -29,6 +29,36 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+
+  api:
+    build:
+      context: ../
+      dockerfile: services/api/Dockerfile
+    container_name: your-notes-api
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-yournotes}:${POSTGRES_PASSWORD:-yournotes}@postgres:5432/${POSTGRES_DB:-yournotes}?sslmode=disable
+      JWT_SECRET: ${JWT_SECRET:-your-notes-production-secret-CHANGE-ME}
+      PORT: 3001
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL}
+      LLM_MODEL: ${LLM_MODEL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ../
+      dockerfile: apps/web/Dockerfile
+    container_name: your-notes-web
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - api
 
 volumes:
   postgres_data:

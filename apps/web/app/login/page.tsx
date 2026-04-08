@@ -6,7 +6,7 @@ import { apiFetch } from '@/lib/api';
 
 type AuthResp = { token: string; user: { id: string; nickname?: string | null } };
 
-export default function LoginPage() {
+export default function LoginPage(): React.JSX.Element {
   const router = useRouter();
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
@@ -25,7 +25,10 @@ export default function LoginPage() {
       const payload =
         mode === 'login' ? { email, password } : { email, password, nickname: nickname || undefined };
       const data = await apiFetch<AuthResp>(path, { method: 'POST', body: JSON.stringify(payload) });
-      localStorage.setItem('yn_token', data.token);
+      
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('yn_token', data.token);
+      }
       router.replace('/app');
     } catch (e: any) {
       setError(e?.message ?? '登录失败');
@@ -71,7 +74,7 @@ export default function LoginPage() {
 
         <div className="col" style={{ gap: '1rem' }}>
           {mode === 'register' ? (
-            <input className="input" placeholder="您的昵称" value={nickname} onChange={(e) => setNickname(e.target.value)} />
+            <input className="input" placeholder="您的昵称 (选填)" value={nickname} onChange={(e) => setNickname(e.target.value)} />
           ) : null}
           <input className="input" placeholder="邮箱地址" value={email} onChange={(e) => setEmail(e.target.value)} />
           <input
@@ -101,11 +104,10 @@ export default function LoginPage() {
           </button>
 
           <p className="muted" style={{ fontSize: '0.75rem', textAlign: 'center', marginTop: '1rem' }}>
-            Powered by Cloudflare Workers AI & D1
+            Powered by Your Notes AI & Node.js
           </p>
         </div>
       </div>
     </div>
   );
 }
-

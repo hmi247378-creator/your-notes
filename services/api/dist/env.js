@@ -10,7 +10,14 @@ const EnvSchema = z.object({
     LLM_MODEL: z.string().min(1).optional(),
 });
 export function loadEnv() {
-    const parsed = EnvSchema.safeParse(process.env);
+    // Pre-process: convert empty strings to undefined to allow Zod's .optional() to work
+    const processEnv = { ...process.env };
+    for (const key in processEnv) {
+        if (processEnv[key] === '') {
+            delete processEnv[key];
+        }
+    }
+    const parsed = EnvSchema.safeParse(processEnv);
     if (!parsed.success) {
         const message = parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('\n');
         throw new Error(`Invalid environment variables:\n${message}`);

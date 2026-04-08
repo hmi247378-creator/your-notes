@@ -455,7 +455,9 @@ export default function NotesPage() {
                         alert('已添加到提醒事项');
                       } catch (e: any) {
                         if (e?.code === 'UNAUTHORIZED') return;
-                        setErr(e?.message ?? '添加失败');
+                        const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'DEFAULT';
+                        const details = e?.details ? JSON.stringify(e.details) : '';
+                        setErr(`添加失败: ${e?.message ?? 'Unknown'}${details ? ' - ' + details : ''} (API: ${baseUrl})`);
                         setAddReminderNoteId(null);
                         setAddReminderStep('confirm');
                       }

@@ -325,17 +325,16 @@ export function NoteList({
                     <div style={{ display: 'flex', gap: '0.25rem', justifyContent: 'flex-end' }}>
                       <button
                         className="btn"
-                        style={{ padding: '4px 8px', fontSize: '0.9375rem', color: 'var(--accent)', opacity: unclassified || !onAddReminder ? 0.3 : 1 }}
-                        disabled={unclassified || !onAddReminder}
-                        onClick={(e) => { e.stopPropagation(); if (!unclassified && onAddReminder) onAddReminder(n.id); }}
+                        style={{ padding: '4px 8px', fontSize: '0.9375rem', color: 'var(--accent)', opacity: !onAddReminder ? 0.3 : 1 }}
+                        disabled={!onAddReminder}
+                        onClick={(e) => { e.stopPropagation(); if (onAddReminder) onAddReminder(n.id); }}
                       >
                         提醒
                       </button>
                       <button
                         className="btn"
-                        style={{ padding: '4px 8px', fontSize: '0.9375rem', color: 'var(--accent)', opacity: unclassified ? 0.3 : 1 }}
-                        disabled={unclassified}
-                        onClick={(e) => { e.stopPropagation(); if (!unclassified && onEdit) onEdit(n.id); }}
+                        style={{ padding: '4px 8px', fontSize: '0.9375rem', color: 'var(--accent)' }}
+                        onClick={(e) => { e.stopPropagation(); if (onEdit) onEdit(n.id); }}
                       >
                         编辑
                       </button>
@@ -372,8 +371,8 @@ export function NoteList({
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
                       <span className="muted" style={{ fontSize: '0.75rem' }}>📅 {formatDay(displayDate(n))}</span>
                       <div style={{ display: 'flex', gap: 4 }}>
-                        <button disabled={unclassified || !onAddReminder} onClick={(e) => { e.stopPropagation(); if (onAddReminder) onAddReminder(n.id); }}>🔔</button>
-                        <button disabled={unclassified} onClick={(e) => { e.stopPropagation(); if (onEdit) onEdit(n.id); }}>✏️</button>
+                        <button disabled={!onAddReminder} onClick={(e) => { e.stopPropagation(); if (onAddReminder) onAddReminder(n.id); }}>🔔</button>
+                        <button onClick={(e) => { e.stopPropagation(); if (onEdit) onEdit(n.id); }}>✏️</button>
                         <button onClick={(e) => { e.stopPropagation(); onDelete(n.id); }}>🗑️</button>
                       </div>
                     </div>

@@ -5,18 +5,19 @@ import { apiFetch } from '@/lib/api';
 import { QuickInputModal } from '@/components/QuickInputModal';
 import type { TagNode } from '@/components/TagTree';
 import type { NoteItem } from '@/components/NoteList';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-} from 'recharts';
+import dynamic from 'next/dynamic';
+
+// 动态路由导入 Recharts，防止 SSR 阶段 ReferenceError: self is not defined
+const ResponsiveContainer = dynamic(() => import('recharts').then((m) => m.ResponsiveContainer), { ssr: false });
+const LineChart = dynamic(() => import('recharts').then((m) => m.LineChart), { ssr: false });
+const Line = dynamic(() => import('recharts').then((m) => m.Line), { ssr: false });
+const XAxis = dynamic(() => import('recharts').then((m) => m.XAxis), { ssr: false });
+const YAxis = dynamic(() => import('recharts').then((m) => m.YAxis), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then((m) => m.CartesianGrid), { ssr: false });
+const Tooltip = dynamic(() => import('recharts').then((m) => m.Tooltip), { ssr: false });
+const PieChart = dynamic(() => import('recharts').then((m) => m.PieChart), { ssr: false });
+const Pie = dynamic(() => import('recharts').then((m) => m.Pie), { ssr: false });
+const Cell = dynamic(() => import('recharts').then((m) => m.Cell), { ssr: false });
 
 type NotesResp = { items: NoteItem[]; total: number };
 type TagCountsResp = { counts: Record<string, number> };
@@ -47,6 +48,8 @@ export default function DashboardPage() {
   const [totalNotes, setTotalNotes] = useState(0);
   const [tagCounts, setTagCounts] = useState<Record<string, number>>({});
   const [trendData, setTrendData] = useState<Array<{ date: string; count: number }>>([]);
+  const [taskRate, setTaskRate] = useState(0);
+  const [reminderCount, setReminderCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [openQuickInput, setOpenQuickInput] = useState(false);
 
@@ -63,18 +66,22 @@ export default function DashboardPage() {
       try {
         const { from: f, to: toDate } = getDateRange(30);
         const tok = token!;
-        const [tagsRes, listRes, countsRes] = await Promise.all([
+        const [tagsRes, overallRes, listRes, countsRes, remindersRes] = await Promise.all([
           apiFetch<{ tags: TagNode[] }>('/tags/tree', { token: tok }),
+          apiFetch<NotesResp>(`/notes?pageSize=1`, { token: tok }), // Overall total
           apiFetch<NotesResp>(`/notes?from=${f}&to=${toDate}&dateField=recordedAt&pageSize=100`, { token: tok }),
           apiFetch<TagCountsResp>(`/notes/tag-counts?from=${f}&to=${toDate}&dateField=recordedAt`, { token: tok }),
+          apiFetch<{ items: any[]; total: number }>('/reminders?pageSize=100', { token: tok }),
         ]);
+        
         setTags(tagsRes.tags);
-        setTotalNotes(listRes.total);
+        setTotalNotes(overallRes.total); // Real overall total
         setTagCounts(countsRes.counts ?? {});
 
-        // 按日期聚合笔记
+        // Process trend data (last 30 days)
+        const entries = listRes.items || [];
         const byDate: Record<string, number> = {};
-        for (const n of listRes.items) {
+        for (const n of entries) {
           const d = (n.recordedAt ?? n.createdAt).slice(0, 10);
           byDate[d] = (byDate[d] ?? 0) + 1;
         }
@@ -83,7 +90,17 @@ export default function DashboardPage() {
           .slice(-7)
           .map(([date, count]) => ({ date: date.slice(5), count }));
         setTrendData(sorted.length ? sorted : [{ date: '-', count: 0 }]);
-      } catch {
+
+        // Process reminder stats
+        const allReminders = remindersRes.items || [];
+        const pending = allReminders.filter(r => r.status !== '已完成').length;
+        const finished = allReminders.filter(r => r.status === '已完成').length;
+        setReminderCount(pending);
+        const rate = allReminders.length > 0 ? Math.round((finished / allReminders.length) * 1000) / 10 : 0;
+        setTaskRate(rate);
+
+      } catch (e) {
+        console.error('Dashboard load failed:', e);
         setTrendData([{ date: '-', count: 0 }]);
       } finally {
         setLoading(false);
@@ -126,9 +143,7 @@ export default function DashboardPage() {
       .filter(Boolean);
   }, [tagCounts, tags]);
 
-  // 模拟数据（无 API 的字段）
-  const taskRate = 86.4;
-  const reminderCount = 12;
+  // 去除原来的模拟数据
 
   return (
     <div className="col" style={{ gap: '2rem' }}>
@@ -208,7 +223,7 @@ export default function DashboardPage() {
                   <YAxis stroke="var(--muted)" fontSize={12} />
                   <Tooltip
                     contentStyle={{ background: 'var(--panel)', border: '1px solid var(--border)', borderRadius: 8 }}
-                    formatter={(value: number | undefined) => [`${value ?? 0} 条`, '']}
+                    formatter={(value: any) => [`${value ?? 0} 条`, '']}
                   />
                   <Line type="monotone" dataKey="count" stroke="var(--accent)" strokeWidth={2} dot={{ r: 4 }} />
                 </LineChart>
@@ -306,7 +321,9 @@ export default function DashboardPage() {
           tags={tags}
           onSuccess={() => {
             setOpenQuickInput(false);
-            window.location.reload();
+            // 这里我们不需要整个页面刷新，只需让 useEffect 重新执行 load 即可
+            // 通过修改 token 触发不太优雅，我们可以写一个 refresh 函数或者刷新页面
+            window.location.reload(); 
           }}
         />
       )}

@@ -3,9 +3,7 @@ generator client {
 }
 
 datasource db {
-  // 本仓库默认用 SQLite 便于本地直接跑起来（无需 Docker）。
-  // 若你本机有 Postgres（或装了 Docker），把 provider 改回 "postgresql" 并更新 DATABASE_URL 即可。
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

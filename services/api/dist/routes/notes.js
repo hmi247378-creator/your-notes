@@ -95,7 +95,7 @@ export async function registerNoteRoutes(app) {
                 suggestions = [];
             }
             else {
-                const { suggestions: s } = await classifyForUser(userId, contentPlain);
+                const { suggestions: s } = await classifyForUser(userId, contentPlain, { preferLLM: true });
                 suggestions = s.map((x) => ({ tagId: x.tagId, score: x.score, level: x.level }));
                 const topTagId = s[0]?.tagId ?? null;
                 tagIds = topTagId ? [topTagId] : [];
@@ -229,7 +229,7 @@ export async function registerNoteRoutes(app) {
                 suggestionsForLog = [];
             }
             else {
-                const { suggestions } = await classifyForUser(userId, contentPlain);
+                const { suggestions } = await classifyForUser(userId, contentPlain, { preferLLM: true });
                 suggestionsForLog = suggestions;
                 const topTagId = suggestions[0]?.tagId ?? null;
                 tagIds = topTagId ? [topTagId] : [];
@@ -280,7 +280,7 @@ export async function registerNoteRoutes(app) {
             userId,
             deletedAt: null,
             ...(q.data.q?.trim()
-                ? { contentPlain: { contains: q.data.q.trim(), mode: 'insensitive' } }
+                ? { contentPlain: { contains: q.data.q.trim() } }
                 : {}),
             ...(q.data.from || q.data.to
                 ? dateField === 'recordedAt'
@@ -355,7 +355,7 @@ export async function registerNoteRoutes(app) {
                 userId,
                 deletedAt: null,
                 ...(archived === undefined ? {} : { archived }),
-                ...(searchQ ? { contentPlain: { contains: searchQ, mode: 'insensitive' } } : {}),
+                ...(searchQ ? { contentPlain: { contains: searchQ } } : {}),
                 ...dateFilter,
                 noteTags: { some: { tagId: { in: tagIds } } },
             };
@@ -402,7 +402,7 @@ export async function registerNoteRoutes(app) {
             deletedAt: null,
             batchId: null,
             ...(archived === undefined ? {} : { archived }),
-            ...(searchQ ? { contentPlain: { contains: searchQ, mode: 'insensitive' } } : {}),
+            ...(searchQ ? { contentPlain: { contains: searchQ } } : {}),
             ...dateFilter,
         };
         const [batches, singleNotes] = await Promise.all([

@@ -11,7 +11,7 @@ export async function registerClassifyRoutes(app) {
         const body = schema.safeParse(req.body);
         if (!body.success)
             throw badRequest('Invalid classify payload', body.error.flatten());
-        const { suggestions, explain } = await classifyForUser(userId, body.data.text);
+        const { suggestions, explain } = await classifyForUser(userId, body.data.text, { preferLLM: true });
         const suggestion = await prisma.classificationSuggestion.create({
             data: {
                 userId,

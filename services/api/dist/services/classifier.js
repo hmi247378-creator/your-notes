@@ -187,7 +187,7 @@ async function getLeafTags(userId) {
     const leafTags = allTags.filter((t) => !parentIds.has(t.id));
     return leafTags.length > 0 ? leafTags : allTags;
 }
-export async function classifyForUser(userId, text) {
+export async function classifyForUser(userId, text, options) {
     const tags = await getLeafTags(userId);
     if (tags.length === 0)
         return { suggestions: [], explain: [] };
@@ -234,15 +234,18 @@ export async function classifyForUser(userId, text) {
     const secondScore = scored[1]?.score ?? 0;
     const topTag = scored[0] ? tags.find((t) => t.id === scored[0].tagId) : null;
     const topTagNameInText = topTag && text.toLowerCase().includes(topTag.name.toLowerCase());
-    // 使用 LLM 兜底的场景：
-    // 1. 规则置信度低（标签名不在文本或分数低）
-    // 2. 多主题混合：文本含空格/分号/句号等分隔符（如「安全生产工作总结；系统对账单」），由 LLM 判断主分类
-    // 3. 第二名得分较高（>=0.2）：top1 标签名在文本中，但第二名也有一定相关性
+    // 使用 LLM（DeepSeek）的场景：
+    // 1. preferLLM（智能适配）：强制调用 LLM，结合过往记录分析当前录入的更好归类
+    // 2. 规则置信度低（标签名不在文本或分数低）
+    // 3. 多主题混合：文本含空格/分号/句号等分隔符，由 LLM 判断主分类
+    // 4. 第二名得分较高（>=0.2）：top1 标签名在文本中，但第二名也有一定相关性
     const textHasMultipleParts = (text.trim().includes(' ') || /[。；;]/.test(text.trim())) && text.trim().length > 15;
     const effectiveThreshold = topTagNameInText ? RULE_CONFIDENCE_THRESHOLD : 0.75;
     const hasMultipleTopics = topTagNameInText &&
         (textHasMultipleParts || (secondScore >= 0.2 && scored.length >= 2));
-    const shouldUseLLM = hasMultipleTopics || (topScore < effectiveThreshold && !topTagNameInText);
+    const shouldUseLLM = options?.preferLLM === true ||
+        hasMultipleTopics ||
+        (topScore < effectiveThreshold && !topTagNameInText);
     if (shouldUseLLM) {
         // 传入关键词 + 历史画像 top 词 + 该标签下已有记录样本，供 LLM 综合判断
         const tagOptions = tags.map((t) => {

@@ -1,9 +1,9 @@
 import { prisma } from '../prisma.js';
 import { simpleTokens } from '../utils/text.js';
-const MAX_NOTES_TO_SCAN = 150;
-const MAX_SNIPPETS_PER_TAG = 2;
-const SNIPPET_LEN = 80;
-const MAX_RECORD_TOKENS_PER_TAG = 60;
+const MAX_NOTES_TO_SCAN = 200;
+const MAX_SNIPPETS_PER_TAG = 3;
+const SNIPPET_LEN = 90;
+const MAX_RECORD_TOKENS_PER_TAG = 80;
 /**
  * 获取各标签下已有记录的画像
  * - 从最近记录中提取词汇，反映用户在该标签下的实际用词习惯

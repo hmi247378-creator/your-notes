@@ -46,8 +46,9 @@ reminders.get('/', async (c) => {
 
 reminders.post('/', async (c) => {
   const userId = c.get('jwtPayload').userId;
-  const body = CreateReminderSchema.safeParse(await c.req.json());
-  if (!body.success) return c.json({ error: 'Invalid payload' }, 400);
+  const bodyJson = await c.req.json().catch(() => ({}));
+  const body = CreateReminderSchema.safeParse(bodyJson);
+  if (!body.success) return c.json({ error: `Invalid payload: ${JSON.stringify(body.error.flatten())}. Received: ${JSON.stringify(bodyJson)}` }, 400);
 
   const { noteId, remindAt } = body.data;
   
